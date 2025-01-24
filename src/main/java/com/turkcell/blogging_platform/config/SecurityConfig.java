@@ -34,7 +34,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // /api/auth/** ve /api/admin/** endpoint'leri herkes tarafından erişilebilir.
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**",
+                                "/api/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**").permitAll()
                         // /api/admin/** endpoint'leri sadece ADMIN rolüne sahip kullanıcılar tarafından erişilebilir.
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // /api/user/** endpoint'leri sadece USER rolüne sahip kullanıcılar tarafından erişilebilir.

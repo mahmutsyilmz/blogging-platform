@@ -6,6 +6,10 @@ import com.turkcell.blogging_platform.dto.request.RegisterRequest;
 import com.turkcell.blogging_platform.dto.response.AuthenticationResponse;
 import com.turkcell.blogging_platform.entity.Role;
 import com.turkcell.blogging_platform.entity.User;
+import com.turkcell.blogging_platform.exception.BaseException;
+import com.turkcell.blogging_platform.exception.UsernameAlreadyExistsException;
+import com.turkcell.blogging_platform.exception.handler.ErrorMessage;
+import com.turkcell.blogging_platform.exception.handler.MessageType;
 import com.turkcell.blogging_platform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +27,14 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+
+        // Kullanıcı adı daha önce alınmış mı kontrol et.
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new UsernameAlreadyExistsException(new ErrorMessage(MessageType.USERNAME_ALREADY_EXISTS));
+
+
+        }
+
         // Yeni kullanıcı oluştur.
         User user = User.builder()
                 .username(request.getUsername())
@@ -48,6 +60,7 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .message("Kullanıcı başarıyla kaydedildi.")
                 .build();
     }
 

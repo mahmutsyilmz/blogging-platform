@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin")
 public class AdminController {
 
-    //test etmek için
     @GetMapping("/dashboard")
     public String adminDashboard() {
         return "Bu endpoint'e sadece ADMIN rolü erişebilir. Hoşgeldin Admin!";
     }
-
 }
