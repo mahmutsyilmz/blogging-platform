@@ -7,12 +7,15 @@ import com.turkcell.blogging_platform.dto.response.AuthenticationResponse;
 import com.turkcell.blogging_platform.entity.Role;
 import com.turkcell.blogging_platform.entity.User;
 import com.turkcell.blogging_platform.exception.BaseException;
+import com.turkcell.blogging_platform.exception.InvalidPasswordException;
 import com.turkcell.blogging_platform.exception.UsernameAlreadyExistsException;
+import com.turkcell.blogging_platform.exception.UsernameNotFoundException;
 import com.turkcell.blogging_platform.exception.handler.ErrorMessage;
 import com.turkcell.blogging_platform.exception.handler.MessageType;
 import com.turkcell.blogging_platform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,8 +34,6 @@ public class AuthenticationService {
         // Kullanıcı adı daha önce alınmış mı kontrol et.
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new UsernameAlreadyExistsException(new ErrorMessage(MessageType.USERNAME_ALREADY_EXISTS));
-
-
         }
 
         // Yeni kullanıcı oluştur.
@@ -66,16 +67,34 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(LoginRequest request) {
         // Kullanıcıdan gelen username ve password'ü doğrulamak için
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            // Şifre yanlışsa veya kullanıcı yoksa buraya düşer
+            // Önce kullanıcının var olup olmadığını kontrol et
+            boolean userExists = userRepository.existsByUsername(request.getUsername());
+            if (userExists) {
+                // Kullanıcı var ama şifre yanlış
+                throw new InvalidPasswordException(
+                        new ErrorMessage(MessageType.INVALID_PASSWORD)
+                );
+            } else {
+                // Kullanıcı yok
+                throw new UsernameNotFoundException(
+                        new ErrorMessage(MessageType.USER_NOT_FOUND)
+                );
+            }
+        }
+
 
         // Kullanıcı veritabanında olmalı ve şifre doğru olmalı, yoksa authenticate() exception fırlatır.
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+
 
         // Kullanıcı doğrulandığına göre token üretip dönebiliriz.
         String jwtToken = jwtService.generateToken(
@@ -88,6 +107,7 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .message("Kullanıcı başarıyla doğrulandı.")
                 .build();
     }
 }

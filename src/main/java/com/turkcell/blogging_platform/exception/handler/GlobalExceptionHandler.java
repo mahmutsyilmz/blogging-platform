@@ -1,7 +1,9 @@
 package com.turkcell.blogging_platform.exception.handler;
 
+import com.turkcell.blogging_platform.exception.InvalidPasswordException;
 import com.turkcell.blogging_platform.exception.UnauthorizedAccessException;
 import com.turkcell.blogging_platform.exception.UsernameAlreadyExistsException;
+import com.turkcell.blogging_platform.exception.UsernameNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -43,6 +45,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleUserAlreadyExistsException(UsernameAlreadyExistsException ex, WebRequest request) {
         return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
     }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiError> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ApiError> handleInvalidPasswordException(InvalidPasswordException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+    }
+
 
     @ExceptionHandler(UnauthorizedAccessException.class)
     public ResponseEntity<ApiError> handleNoPermissionException(UnauthorizedAccessException ex, WebRequest request) {
