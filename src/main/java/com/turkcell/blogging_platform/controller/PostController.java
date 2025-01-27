@@ -8,12 +8,10 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user/posts")
@@ -38,6 +36,23 @@ public class PostController {
                 .data(response)
                 .message("Post başarıyla oluşturuldu")
                 .path("/api/user/posts/create")
+                .build();
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/update/{postId}")
+    public ResponseEntity<ApiResponse<PostDtoResponse>> updatePost(
+            @Valid @RequestBody PostDtoRequest request,
+            @PathVariable UUID postId
+    ) {
+        // Servis çağrısı -> orada @PreAuthorize devreye girecek
+        PostDtoResponse postDtoResponse = postService.updatePost(request, postId);
+
+        ApiResponse<PostDtoResponse> apiResponse = ApiResponse.<PostDtoResponse>builder()
+                .createdDate(LocalDateTime.now())
+                .data(postDtoResponse)
+                .message("Post başarıyla güncellendi")
+                .path("/api/user/posts/" + postId)
                 .build();
         return ResponseEntity.ok(apiResponse);
     }

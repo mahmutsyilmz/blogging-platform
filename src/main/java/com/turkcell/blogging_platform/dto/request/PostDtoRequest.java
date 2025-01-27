@@ -20,6 +20,6 @@ public class PostDtoRequest {
         @Size(min = 1, max = 255, message = "Başlık 1-255 karakter arasında olmalıdır.")
         private String title;
         @NotBlank(message = "İçerik boş olamaz")
-        @Min(value = 10, message = "İçerik 10 karakterden uzun olmalıdır.")
+        @Size(min = 10, message = "İçerik en az 10 karakter olmalıdır.")
         private String content;
 }

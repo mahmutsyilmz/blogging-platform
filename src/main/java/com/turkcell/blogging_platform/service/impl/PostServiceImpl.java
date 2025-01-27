@@ -4,6 +4,7 @@ import com.turkcell.blogging_platform.dto.request.PostDtoRequest;
 import com.turkcell.blogging_platform.dto.response.PostDtoResponse;
 import com.turkcell.blogging_platform.entity.Post;
 import com.turkcell.blogging_platform.entity.User;
+import com.turkcell.blogging_platform.exception.PostNotFoundException;
 import com.turkcell.blogging_platform.exception.UsernameNotFoundException;
 import com.turkcell.blogging_platform.exception.handler.ErrorMessage;
 import com.turkcell.blogging_platform.exception.handler.MessageType;
@@ -11,6 +12,7 @@ import com.turkcell.blogging_platform.repository.PostRepository;
 import com.turkcell.blogging_platform.repository.UserRepository;
 import com.turkcell.blogging_platform.service.PostService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDtoResponse createPost(PostDtoRequest request, String username) {
         //username'i controller tarafında securitycontext'ten alıyoruz
-        //otomatik olarak giriş yapmış olan kullanıcının username'ini alıyoruz
+        //otomatik olarak, giriş yapmış olan kullanıcının username'ini alıyoruz
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(
                         new ErrorMessage(MessageType.USER_NOT_FOUND)));
@@ -39,9 +41,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @PreAuthorize("@postSecurityService.canEditPost(#postId, authentication)")
     public PostDtoResponse updatePost(PostDtoRequest request, UUID postId) {
+        // Yukarıdaki @PreAuthorize, method çağrılmadan önce postId ve authentication parametresini
+        // postSecurityService.canEditPost'a gönderecek.
+        // Eğer false dönerse 403 hatası oluşacak ve methoda hiç girilmeyecek.
 
-        return null;
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
+
+        post.setTitle(request.getTitle());
+        post.setContent(request.getContent());
+
+        Post updatedPost = postRepository.save(post);
+        return convertToPostDtoResponse(updatedPost);
     }
 
     @Override

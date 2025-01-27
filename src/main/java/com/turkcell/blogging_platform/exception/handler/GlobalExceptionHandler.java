@@ -1,9 +1,6 @@
 package com.turkcell.blogging_platform.exception.handler;
 
-import com.turkcell.blogging_platform.exception.InvalidPasswordException;
-import com.turkcell.blogging_platform.exception.UnauthorizedAccessException;
-import com.turkcell.blogging_platform.exception.UsernameAlreadyExistsException;
-import com.turkcell.blogging_platform.exception.UsernameNotFoundException;
+import com.turkcell.blogging_platform.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.AccessDeniedException;
 import java.util.*;
 
 @ControllerAdvice
@@ -56,9 +54,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
     }
 
-
-    @ExceptionHandler(UnauthorizedAccessException.class)
-    public ResponseEntity<ApiError> handleNoPermissionException(UnauthorizedAccessException ex, WebRequest request) {
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<ApiError> handlePostNotFoundException(PostNotFoundException ex, WebRequest request) {
         return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
     }
 
