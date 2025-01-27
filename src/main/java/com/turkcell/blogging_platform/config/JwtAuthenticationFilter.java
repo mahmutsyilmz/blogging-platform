@@ -1,6 +1,6 @@
 package com.turkcell.blogging_platform.config;
 
-import com.turkcell.blogging_platform.service.JwtService;
+import com.turkcell.blogging_platform.service.impl.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

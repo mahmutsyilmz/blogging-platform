@@ -1,4 +1,4 @@
-package com.turkcell.blogging_platform.service;
+package com.turkcell.blogging_platform.service.impl;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

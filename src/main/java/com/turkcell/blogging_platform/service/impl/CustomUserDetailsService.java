@@ -1,4 +1,4 @@
-package com.turkcell.blogging_platform.service;
+package com.turkcell.blogging_platform.service.impl;
 
 import com.turkcell.blogging_platform.entity.User;
 import com.turkcell.blogging_platform.exception.UsernameNotFoundException;

@@ -3,7 +3,7 @@ package com.turkcell.blogging_platform.controller;
 import com.turkcell.blogging_platform.dto.request.LoginRequest;
 import com.turkcell.blogging_platform.dto.request.RegisterRequest;
 import com.turkcell.blogging_platform.dto.response.AuthenticationResponse;
-import com.turkcell.blogging_platform.service.AuthenticationService;
+import com.turkcell.blogging_platform.service.impl.AuthenticationService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

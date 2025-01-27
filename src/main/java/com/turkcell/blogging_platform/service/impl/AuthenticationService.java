@@ -1,4 +1,4 @@
-package com.turkcell.blogging_platform.service;
+package com.turkcell.blogging_platform.service.impl;
 
 
 import com.turkcell.blogging_platform.dto.request.LoginRequest;
@@ -6,7 +6,6 @@ import com.turkcell.blogging_platform.dto.request.RegisterRequest;
 import com.turkcell.blogging_platform.dto.response.AuthenticationResponse;
 import com.turkcell.blogging_platform.entity.Role;
 import com.turkcell.blogging_platform.entity.User;
-import com.turkcell.blogging_platform.exception.BaseException;
 import com.turkcell.blogging_platform.exception.InvalidPasswordException;
 import com.turkcell.blogging_platform.exception.UsernameAlreadyExistsException;
 import com.turkcell.blogging_platform.exception.UsernameNotFoundException;
