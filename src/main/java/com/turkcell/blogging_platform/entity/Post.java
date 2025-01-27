@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -16,12 +17,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Post {
 
     @Id
-    @GeneratedValue(generator = "UUID") // Hibernate UUID generator
+    @GeneratedValue(generator = "UUID")
     @Column(
-            columnDefinition = "uuid", // Veritabanında UUID tipi için
+            columnDefinition = "uuid",
             updatable = false,
             nullable = false,
             unique = true

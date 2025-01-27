@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface PostService {
 
 
-    PostDtoResponse createPost(PostDtoRequest request);
+    PostDtoResponse createPost(PostDtoRequest request,String username);
 
     PostDtoResponse updatePost(PostDtoRequest request, UUID postId);
 
