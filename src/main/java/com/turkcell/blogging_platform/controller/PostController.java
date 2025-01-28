@@ -7,10 +7,12 @@ import com.turkcell.blogging_platform.service.PostService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,6 +23,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/create")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<PostDtoResponse>> createPost(
             @Valid @RequestBody PostDtoRequest request,
             Authentication authentication) {
@@ -41,6 +44,7 @@ public class PostController {
     }
 
     @PostMapping("/update/{postId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<PostDtoResponse>> updatePost(
             @Valid @RequestBody PostDtoRequest request,
             @PathVariable UUID postId
@@ -56,4 +60,89 @@ public class PostController {
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
+
+    @DeleteMapping("/delete/{postId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<PostDtoResponse>> deletePost(
+            @PathVariable UUID postId
+    ){
+        PostDtoResponse postDtoResponse = postService.getPost(postId);
+
+        ApiResponse<PostDtoResponse> apiResponse = ApiResponse.<PostDtoResponse>builder()
+                .createdDate(LocalDateTime.now())
+                .data(postDtoResponse)
+                .path("/api/user/posts/delete" + postId)
+                .message("Post başarıyla silindi.")
+                .build();
+
+        postService.deletePost(postId);
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/get/{postId}")
+    public ResponseEntity<ApiResponse<PostDtoResponse>> getPost(
+            @PathVariable UUID postId
+    ){
+        PostDtoResponse postDtoResponse = postService.getPost(postId);
+
+        ApiResponse<PostDtoResponse> apiResponse = ApiResponse.<PostDtoResponse>builder()
+                .createdDate(LocalDateTime.now())
+                .data(postDtoResponse)
+                .path("/api/user/posts/get" + postId)
+                .message("Post başarıyla getirildi.")
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<ApiResponse<List<PostDtoResponse>>> getAllPosts() {
+        // Servisten tüm postları çek
+        List<PostDtoResponse> posts = postService.getAllPosts();
+
+        // ApiResponse oluştur
+        ApiResponse<List<PostDtoResponse>> apiResponse = ApiResponse.<List<PostDtoResponse>>builder()
+                .createdDate(LocalDateTime.now())
+                .data(posts)
+                .message("Tüm postlar başarıyla getirildi.")
+                .path("/api/user/posts")
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<List<PostDtoResponse>>> getAllPostsByUser(
+            @PathVariable UUID userId
+    ) {
+        List<PostDtoResponse> posts = postService.getAllPostsByUser(userId);
+
+        ApiResponse<List<PostDtoResponse>> apiResponse = ApiResponse.<List<PostDtoResponse>>builder()
+                .createdDate(LocalDateTime.now())
+                .data(posts)
+                .message("Kullanıcıya ait postlar başarıyla getirildi.")
+                .path("/api/user/posts/" + userId)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<PostDtoResponse>>> getAllPostsByTitle(
+            @RequestParam String title
+    ) {
+        List<PostDtoResponse> posts = postService.getAllPostsByTitle(title);
+
+        ApiResponse<List<PostDtoResponse>> apiResponse = ApiResponse.<List<PostDtoResponse>>builder()
+                .createdDate(LocalDateTime.now())
+                .data(posts)
+                .message("Belirtilen başlığa uygun postlar getirildi.")
+                .path("/api/user/posts/search?title=" + title)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
 }

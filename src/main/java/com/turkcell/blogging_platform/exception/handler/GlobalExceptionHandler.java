@@ -12,7 +12,6 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.file.AccessDeniedException;
 import java.util.*;
 
 @ControllerAdvice
@@ -35,33 +34,33 @@ public class GlobalExceptionHandler {
                 errorsMap.put(fieldName, addMapValue(new ArrayList<>(), objError.getDefaultMessage()));
            }
         }
-        return ResponseEntity.badRequest().body(createApiError(errorsMap,request));
+        return ResponseEntity.badRequest().body(createApiError(errorsMap,request,HttpStatus.BAD_REQUEST));
     }
 
     //unique username hatasının yönetimi
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ResponseEntity<ApiError> handleUserAlreadyExistsException(UsernameAlreadyExistsException ex, WebRequest request) {
-        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.CONFLICT));
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiError> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
-        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ApiError> handleInvalidPasswordException(InvalidPasswordException ex, WebRequest request) {
-        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.UNAUTHORIZED));
     }
 
     @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<ApiError> handlePostNotFoundException(PostNotFoundException ex, WebRequest request) {
-        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.NOT_FOUND));
     }
 
-    public <E> ApiError<E> createApiError(E message,WebRequest request) {
+    public <E> ApiError<E> createApiError(E message,WebRequest request,HttpStatus status) {
         ApiError apiError = new ApiError();
-        apiError.setStatus(HttpStatus.BAD_REQUEST.value());
+        apiError.setStatus(status.value());
 
         Exception exception = new Exception();
         exception.setCreatedDate(new Date());

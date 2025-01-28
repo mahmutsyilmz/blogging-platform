@@ -57,29 +57,62 @@ public class PostServiceImpl implements PostService {
         return convertToPostDtoResponse(updatedPost);
     }
 
+
     @Override
+    @PreAuthorize("@postSecurityService.canEditPost(#postId, authentication)")
     public void deletePost(UUID postId) {
 
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
+
+        postRepository.delete(post);
     }
 
     @Override
     public PostDtoResponse getPost(UUID postId) {
-        return null;
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
+
+        return convertToPostDtoResponse(post);
     }
 
     @Override
     public List<PostDtoResponse> getAllPosts() {
-        return List.of();
+
+        List<Post> posts = postRepository.findAll();
+
+        return posts.stream()
+                .map(this::convertToPostDtoResponse)
+                .toList();
     }
 
     @Override
     public List<PostDtoResponse> getAllPostsByUser(UUID userId) {
-        return List.of();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        new ErrorMessage(MessageType.USER_NOT_FOUND)));
+
+        List<Post> posts = postRepository.findByUser((user));
+
+        return posts.stream()
+                .map(this::convertToPostDtoResponse)
+                .toList();
     }
 
     @Override
     public List<PostDtoResponse> getAllPostsByTitle(String title) {
-        return List.of();
+
+        List<Post> posts = postRepository.findByTitleContainingIgnoreCase(title);
+
+        if (posts.isEmpty()) {
+            throw new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND));
+        }
+
+        return posts.stream()
+                .map(this::convertToPostDtoResponse)
+                .toList();
     }
 
     private PostDtoResponse convertToPostDtoResponse(Post post) {
