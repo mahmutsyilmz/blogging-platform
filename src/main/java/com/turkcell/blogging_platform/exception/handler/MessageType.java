@@ -9,6 +9,8 @@ public enum MessageType {
     USER_NOT_FOUND("0003","Kullanıcı bulunamadı."),
     INVALID_PASSWORD("0004","Geçersiz şifre."),
     POST_NOT_FOUND("0005","Post bulunamadı"),
+    ALREADY_LIKED("0006","Bu postu zaten beğendiniz."),
+    NOT_LIKED("0007","Bu postu daha önce beğenmediniz."),
     GENERAL_EXCEPTION("9999","Genel bir hata oluştu.");
 
     private String code;

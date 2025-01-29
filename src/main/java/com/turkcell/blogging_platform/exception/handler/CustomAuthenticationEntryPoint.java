@@ -37,8 +37,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         Exception<String> exception = new Exception<>();
         exception.setCreatedDate(new Date());
         exception.setHostName(getHostName());
-        exception.setPath(request.getRequestURI());
-        exception.setMessage("Erişim yetkiniz yok");
+        exception.setPath("authenticationEntryPoint");
+        exception.setMessage(authException.getMessage());
 
         apiError.setException(exception);
 

@@ -11,13 +11,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostDtoResponse {
-    private UUID id;
-    private String title;
-    private String content;
+public class LikeDtoResponse {
+
     private String username;
-    private String createdDate;
-    private String updatedDate;
-    private int likeCount;
+    private String firstName;
 
 }

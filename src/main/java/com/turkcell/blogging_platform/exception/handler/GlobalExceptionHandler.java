@@ -37,6 +37,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(createApiError(errorsMap,request,HttpStatus.BAD_REQUEST));
     }
 
+    @ExceptionHandler(AlreadyLikedException.class)
+    public ResponseEntity<ApiError> handleAlreadyLikedException(AlreadyLikedException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.CONFLICT));
+    }
+
+    @ExceptionHandler(NotLikedException.class)
+    public ResponseEntity<ApiError> handleNotLikedException(NotLikedException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.NOT_FOUND));
+    }
+
     //unique username hatasının yönetimi
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ResponseEntity<ApiError> handleUserAlreadyExistsException(UsernameAlreadyExistsException ex, WebRequest request) {

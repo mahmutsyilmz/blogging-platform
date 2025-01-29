@@ -117,11 +117,13 @@ public class PostServiceImpl implements PostService {
 
     private PostDtoResponse convertToPostDtoResponse(Post post) {
         return PostDtoResponse.builder()
+                .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .username(post.getUser().getUsername())
                 .createdDate(post.getCreatedAt().toString())
                 .updatedDate(post.getUpdatedAt().toString())
+                .likeCount(post.getLikes() != null ? post.getLikes().size() : 0)
                 .build();
     }
 
