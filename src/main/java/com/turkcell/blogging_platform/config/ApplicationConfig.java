@@ -3,6 +3,9 @@ package com.turkcell.blogging_platform.config;
 
 
 
+import com.turkcell.blogging_platform.exception.UsernameNotFoundException;
+import com.turkcell.blogging_platform.exception.handler.ErrorMessage;
+import com.turkcell.blogging_platform.exception.handler.MessageType;
 import com.turkcell.blogging_platform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,7 +29,7 @@ public class ApplicationConfig {
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
                 .map(this::mapToUserDetails)
-                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException(new ErrorMessage(MessageType.USER_NOT_FOUND)));
     }
 
     private UserDetails mapToUserDetails(com.turkcell.blogging_platform.entity.User user) {

@@ -1,7 +1,6 @@
 package com.turkcell.blogging_platform.exception.handler;
 
-import com.turkcell.blogging_platform.exception.UnauthorizedAccessException;
-import com.turkcell.blogging_platform.exception.UsernameAlreadyExistsException;
+import com.turkcell.blogging_platform.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -35,23 +34,43 @@ public class GlobalExceptionHandler {
                 errorsMap.put(fieldName, addMapValue(new ArrayList<>(), objError.getDefaultMessage()));
            }
         }
-        return ResponseEntity.badRequest().body(createApiError(errorsMap,request));
+        return ResponseEntity.badRequest().body(createApiError(errorsMap,request,HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(AlreadyLikedException.class)
+    public ResponseEntity<ApiError> handleAlreadyLikedException(AlreadyLikedException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.CONFLICT));
+    }
+
+    @ExceptionHandler(NotLikedException.class)
+    public ResponseEntity<ApiError> handleNotLikedException(NotLikedException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.NOT_FOUND));
     }
 
     //unique username hatasının yönetimi
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ResponseEntity<ApiError> handleUserAlreadyExistsException(UsernameAlreadyExistsException ex, WebRequest request) {
-        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.CONFLICT));
     }
 
-    @ExceptionHandler(UnauthorizedAccessException.class)
-    public ResponseEntity<ApiError> handleNoPermissionException(UnauthorizedAccessException ex, WebRequest request) {
-        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiError> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.NOT_FOUND));
     }
 
-    public <E> ApiError<E> createApiError(E message,WebRequest request) {
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ApiError> handleInvalidPasswordException(InvalidPasswordException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.UNAUTHORIZED));
+    }
+
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<ApiError> handlePostNotFoundException(PostNotFoundException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.NOT_FOUND));
+    }
+
+    public <E> ApiError<E> createApiError(E message,WebRequest request,HttpStatus status) {
         ApiError apiError = new ApiError();
-        apiError.setStatus(HttpStatus.BAD_REQUEST.value());
+        apiError.setStatus(status.value());
 
         Exception exception = new Exception();
         exception.setCreatedDate(new Date());

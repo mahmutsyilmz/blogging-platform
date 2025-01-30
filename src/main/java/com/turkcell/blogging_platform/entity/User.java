@@ -6,9 +6,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
-@Table(name = "_user")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,8 +19,14 @@ import java.util.Date;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID") // Hibernate UUID generator
+    @Column(
+            columnDefinition = "uuid", // Veritabanında UUID tipi için
+            updatable = false,
+            nullable = false,
+            unique = true
+    )
+    private UUID id;
 
     @Column(unique = true, nullable = false)
     private String username;
