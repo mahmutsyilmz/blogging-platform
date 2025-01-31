@@ -8,6 +8,8 @@ import com.turkcell.blog.repository.PostRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service("postSecurityService")
 // "postSecurityService" ismini, @PreAuthorize anotasyonunda @postSecurityService referansı kullanabilmek için veriyoruz.
 public class PostSecurityServiceImpl {
@@ -18,11 +20,11 @@ public class PostSecurityServiceImpl {
         this.postRepository = postRepository;
     }
 
-    public boolean canEditPost(Long postId, Authentication authentication) {
+    public boolean canEditPost(UUID postId, Authentication authentication) {
 
         String currentUsername = authentication.getName();
 
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findByUuid(postId)
                 .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
 
         String postOwner = post.getUser().getUsername();
