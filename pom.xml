@@ -11,7 +11,7 @@
 	<groupId>com.turkcell</groupId>
 	<artifactId>blogging-platform</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>blogging-platform</name>
+	<name>bloggingPlatform</name>
 	<description>Blogging Platform</description>
 	<url/>
 	<licenses>
