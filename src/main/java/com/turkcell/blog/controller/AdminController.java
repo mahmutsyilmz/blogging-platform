@@ -1,11 +1,14 @@
 package com.turkcell.blog.controller;
 
 import com.turkcell.blog.dto.request.LoginDtoRequest;
+import com.turkcell.blog.dto.request.PostDtoRequest;
 import com.turkcell.blog.dto.request.RegisterDtoRequest;
 import com.turkcell.blog.dto.response.ApiResponse;
 import com.turkcell.blog.dto.response.AuthenticationDtoResponse;
 import com.turkcell.blog.dto.response.PostDtoResponse;
 import com.turkcell.blog.dto.response.UserDtoResponse;
+import com.turkcell.blog.entity.PostRequest;
+import com.turkcell.blog.service.PostRequestService;
 import com.turkcell.blog.service.impl.PostServiceImpl;
 import com.turkcell.blog.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
@@ -21,69 +24,19 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
     private final UserServiceImpl userServiceImpl;
     private final PostServiceImpl postServiceImpl;
+    private final PostRequestService postRequestService;
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthenticationDtoResponse> login(
-            @Valid @RequestBody LoginDtoRequest request
-    ) {
-        AuthenticationDtoResponse response = userServiceImpl.authenticate(request);
-        return ResponseEntity.ok(response);
-    }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/users")
-    public ResponseEntity<ApiResponse<List<UserDtoResponse>>> getAllUsers() {
-        List<UserDtoResponse> response = userServiceImpl.getAllUsers();
 
-        ApiResponse<List<UserDtoResponse>> apiResponse = ApiResponse.<List<UserDtoResponse>>builder()
-                .createdDate(LocalDateTime.now())
-                .path("/admin/users")
-                .data(response)
-                .message("Users fetched successfully")
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/createUser")
-    public ResponseEntity<ApiResponse<UserDtoResponse>> createUser(
-            @Valid @RequestBody RegisterDtoRequest request
-    ) {
-        UserDtoResponse response = userServiceImpl.createUser(request);
-        ApiResponse<UserDtoResponse> apiResponse = ApiResponse.<UserDtoResponse>builder()
-                .createdDate(LocalDateTime.now())
-                .data(response)
-                .message("User created successfully")
-                .path("/admin/createUser")
-                .build();
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/posts")
-    public ResponseEntity<ApiResponse<List<PostDtoResponse>>> getAllPosts() {
-        List<PostDtoResponse> response = postServiceImpl.getAllPosts();
-
-        ApiResponse<List<PostDtoResponse>> apiResponse = ApiResponse.<List<PostDtoResponse>>builder()
-                .createdDate(LocalDateTime.now())
-                .path("/admin/posts")
-                .data(response)
-                .message("Posts fetched successfully")
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/deleteUser/{userId}")
     public ResponseEntity<ApiResponse<UserDtoResponse>> deleteUser(
             @PathVariable UUID userId
-            ) {
+    ) {
         UserDtoResponse response = userServiceImpl.deleteUser(userId);
 
         ApiResponse<UserDtoResponse> apiResponse = ApiResponse.<UserDtoResponse>builder()
@@ -96,57 +49,56 @@ public class AdminController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @GetMapping("/pending")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/deletePost/{postId}")
-    public ResponseEntity<ApiResponse<PostDtoResponse>> deletePost(
-            @PathVariable UUID postId
-    ) {
-        PostDtoResponse response = postServiceImpl.getPost(postId);
+    public ResponseEntity<ApiResponse<List<PostRequest>>> getPendingRequests() {
+        List<PostRequest> pendingRequests = postRequestService.getAllPendingRequests();
 
-        ApiResponse<PostDtoResponse> apiResponse = ApiResponse.<PostDtoResponse>builder()
+        ApiResponse<List<PostRequest>> apiResponse = ApiResponse.<List<PostRequest>>builder()
+                .data(pendingRequests)
                 .createdDate(LocalDateTime.now())
-                .data(response)
-                .message("Post deleted successfully")
-                .path("/admin/deletePost/" + postId)
-                .build();
-
-        postServiceImpl.deletePost(postId);
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/getPost/{postId}")
-    public ResponseEntity<ApiResponse<PostDtoResponse>> getPost(
-            @PathVariable UUID postId
-    ) {
-        PostDtoResponse response = postServiceImpl.getPost(postId);
-
-        ApiResponse<PostDtoResponse> apiResponse = ApiResponse.<PostDtoResponse>builder()
-                .createdDate(LocalDateTime.now())
-                .data(response)
-                .message("Post fetched successfully")
-                .path("/admin/getPost/" + postId)
+                .message("Pending requests are fetched.")
+                .path("/admin/pending")
                 .build();
 
         return ResponseEntity.ok(apiResponse);
     }
 
+    @PostMapping("/approve/{requestUuid}")
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/getPostsByUser/{userId}")
-    public ResponseEntity<ApiResponse<List<PostDtoResponse>>> getAllPostsByUser(
-            @PathVariable UUID userId
-    ) {
-        List<PostDtoResponse> response = postServiceImpl.getAllPostsByUser(userId);
+    public ResponseEntity<ApiResponse<PostRequest>> approveRequest(@PathVariable UUID requestUuid) {
+        PostRequest request = postRequestService.approveRequest(requestUuid);
 
-        ApiResponse<List<PostDtoResponse>> apiResponse = ApiResponse.<List<PostDtoResponse>>builder()
+        ApiResponse<PostRequest> apiResponse = ApiResponse.<PostRequest>builder()
+                .data(request)
+                .path("/admin/approve/" + requestUuid)
                 .createdDate(LocalDateTime.now())
-                .data(response)
-                .message("Posts fetched successfully")
-                .path("/admin/getPostsByUser/" + userId)
+                .message(request.getRequestType() + " request approved.")
                 .build();
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    @PostMapping("/reject/{requestUuid}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<PostRequest>> rejectRequest(@PathVariable UUID requestUuid) {
+        PostRequest request = postRequestService.rejectRequest(requestUuid);
+
+        ApiResponse<PostRequest> apiResponse = ApiResponse.<PostRequest>builder()
+                .data(request)
+                .path("/admin/approve/" + requestUuid)
+                .createdDate(LocalDateTime.now())
+                .message(request.getRequestType() + " request rejected.")
+                .build();
+
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
+
+
+
+
 
 }

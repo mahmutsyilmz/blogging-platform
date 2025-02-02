@@ -3,18 +3,21 @@ package com.turkcell.blog.service.impl;
 import com.turkcell.blog.dto.request.PostDtoRequest;
 import com.turkcell.blog.dto.response.PostDtoResponse;
 import com.turkcell.blog.entity.Post;
+import com.turkcell.blog.entity.PostRequest;
 import com.turkcell.blog.entity.User;
 import com.turkcell.blog.exception.PostNotFoundException;
 import com.turkcell.blog.exception.UsernameNotFoundException;
 import com.turkcell.blog.exception.handler.ErrorMessage;
 import com.turkcell.blog.exception.handler.MessageType;
 import com.turkcell.blog.repository.PostRepository;
+import com.turkcell.blog.repository.PostRequestRepository;
 import com.turkcell.blog.repository.UserRepository;
 import com.turkcell.blog.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,15 +27,28 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostRequestRepository postRequestRepository;
 
     @Override
     public PostDtoResponse createPost(PostDtoRequest request, User user) {
 
-        Post post = convertToPostEntity(request, user);
 
-        Post savedPost = postRepository.save(post);
+        PostRequest postRequest = PostRequest.builder()
+                .requestType(PostRequest.RequestType.CREATE)
+                .newTitle(request.getTitle())
+                .newContent(request.getContent())
+                .user(user)
+                .status(PostRequest.RequestStatus.PENDING)
+                .build();
 
-        return convertToPostDtoResponse(savedPost);
+        PostRequest savedRequest = postRequestRepository.save(postRequest);
+
+        return PostDtoResponse.builder()
+                .title(savedRequest.getNewTitle())
+                .content(savedRequest.getNewContent())
+                .username(user.getUsername())
+                .createdDate(savedRequest.getCreatedAt().toString())
+                .build();
     }
 
 
@@ -44,11 +60,23 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findByUuid(postId)
                 .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
 
-        post.setTitle(request.getTitle());
-        post.setContent(request.getContent());
+        PostRequest postRequest = PostRequest.builder()
+                .requestType(PostRequest.RequestType.UPDATE)
+                .newTitle(request.getTitle())
+                .newContent(request.getContent())
+                .targetPostUuid(postId)
+                .user(post.getUser())
+                .status(PostRequest.RequestStatus.PENDING)
+                .build();
 
-        Post updatedPost = postRepository.save(post);
-        return convertToPostDtoResponse(updatedPost);
+        PostRequest savedRequest = postRequestRepository.save(postRequest);
+
+        return PostDtoResponse.builder()
+                .title(savedRequest.getNewTitle())
+                .content(savedRequest.getNewContent())
+                .username(post.getUser().getUsername())
+                .updatedDate(LocalDateTime.now().toString())
+                .build();
     }
 
 
@@ -59,7 +87,13 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findByUuid(postId)
                 .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
 
-        postRepository.delete(post);
+        PostRequest postRequest = PostRequest.builder()
+                .requestType(PostRequest.RequestType.DELETE)
+                .targetPostUuid(post.getUuid())
+                .user(post.getUser())
+                .build();
+
+        postRequestRepository.save(postRequest);
     }
 
     @Override

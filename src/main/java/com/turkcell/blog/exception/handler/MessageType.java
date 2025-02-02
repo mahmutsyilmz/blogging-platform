@@ -11,6 +11,8 @@ public enum MessageType {
     POST_NOT_FOUND("0005","Post not found."),
     ALREADY_LIKED("0006","You have already liked this post."),
     NOT_LIKED("0007","You have not liked this post."),
+    REQUEST_NOT_FOUND("0008","Request not found."),
+    REQUEST_NOT_PENDING("0009","Request is not pending."),
     GENERAL_EXCEPTION("9999","An error occurred.");
 
     private String code;

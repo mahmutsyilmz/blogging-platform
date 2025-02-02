@@ -70,6 +70,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.NOT_FOUND));
     }
 
+    @ExceptionHandler(RequestNotFoundException.class)
+    public ResponseEntity<ApiError> handleRequestNotFoundException(RequestNotFoundException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.NOT_FOUND));
+    }
+
+    @ExceptionHandler(RequestNotPendingException.class)
+    public ResponseEntity<ApiError> handleRequestNotPendingException(RequestNotPendingException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request,HttpStatus.CONFLICT));
+    }
+
     public <E> ApiError<E> createApiError(E message,WebRequest request,HttpStatus status) {
         ApiError apiError = new ApiError();
         apiError.setStatus(status.value());

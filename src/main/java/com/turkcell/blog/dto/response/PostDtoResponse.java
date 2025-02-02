@@ -18,6 +18,6 @@ public class PostDtoResponse {
     private String username;
     private String createdDate;
     private String updatedDate;
-    private int likeCount;
+    private Integer likeCount;
 
 }

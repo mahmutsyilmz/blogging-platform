@@ -48,7 +48,6 @@ public class PostController {
             @Valid @RequestBody PostDtoRequest request,
             @PathVariable UUID postId
     ) {
-        // Servis çağrısı -> orada @PreAuthorize devreye girecek
         PostDtoResponse postDtoResponse = postService.updatePost(request, postId);
 
         ApiResponse<PostDtoResponse> apiResponse = ApiResponse.<PostDtoResponse>builder()
@@ -61,7 +60,6 @@ public class PostController {
     }
 
     @DeleteMapping("/delete/{postId}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<PostDtoResponse>> deletePost(
             @PathVariable UUID postId
     ){
@@ -110,7 +108,7 @@ public class PostController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/getAllPostsByUserId/{userId}")
     public ResponseEntity<ApiResponse<List<PostDtoResponse>>> getAllPostsByUser(
             @PathVariable UUID userId
     ) {
@@ -120,7 +118,7 @@ public class PostController {
                 .createdDate(LocalDateTime.now())
                 .data(posts)
                 .message("Successfully get all posts by user")
-                .path("/api/user/posts/" + userId)
+                .path("/posts/getAllPostsByUserId/" + userId)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -141,6 +139,7 @@ public class PostController {
 
         return ResponseEntity.ok(apiResponse);
     }
+
 
 
 }
