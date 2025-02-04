@@ -13,6 +13,7 @@ public enum MessageType {
     NOT_LIKED("0007","You have not liked this post."),
     REQUEST_NOT_FOUND("0008","Request not found."),
     REQUEST_NOT_PENDING("0009","Request is not pending."),
+    EMAIL_ALREADY_EXISTS("0010","Email already exists."),
     GENERAL_EXCEPTION("9999","An error occurred.");
 
     private String code;

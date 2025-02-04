@@ -38,7 +38,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         exception.setCreatedDate(new Date());
         exception.setHostName(getHostName());
         exception.setPath("authenticationEntryPoint");
-        exception.setMessage(authException.getMessage());
+        exception.setMessage("You are not authorized to access this resource.");
 
         apiError.setException(exception);
 

@@ -42,6 +42,10 @@ public class UserServiceImpl {
             throw new UsernameAlreadyExistsException(new ErrorMessage(MessageType.USERNAME_ALREADY_EXISTS));
         }
 
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new UsernameAlreadyExistsException(new ErrorMessage(MessageType.EMAIL_ALREADY_EXISTS));
+        }
+
         // Yeni kullanıcı oluştur.
         User user = User.builder()
                 .username(request.getUsername())
@@ -61,7 +65,8 @@ public class UserServiceImpl {
                         .withUsername(user.getUsername())
                         .password(user.getPassword())
                         .authorities("ROLE_" + user.getRole().getName())
-                        .build()
+                        .build(),
+                user.getUuid().toString() // user.getUuid().toString() EKLENDİ
         );
 
 
@@ -113,9 +118,9 @@ public class UserServiceImpl {
                         .withUsername(user.getUsername())
                         .password(user.getPassword())
                         .authorities("ROLE_" + role)
-                        .build()
+                        .build(),
+                user.getUuid().toString()
         );
-
         return AuthenticationDtoResponse.builder()
                 .token(jwtToken)
                 .message(user.getRole().getName() + " " + user.getUsername() + " successfully authenticated.")
