@@ -5,6 +5,7 @@ import com.turkcell.blog.dto.response.PostDtoResponse;
 import com.turkcell.blog.entity.Post;
 import com.turkcell.blog.entity.PostRequest;
 import com.turkcell.blog.entity.User;
+import com.turkcell.blog.exception.AlreadyPostRequestExists;
 import com.turkcell.blog.exception.PostNotFoundException;
 import com.turkcell.blog.exception.UsernameNotFoundException;
 import com.turkcell.blog.exception.handler.ErrorMessage;
@@ -60,11 +61,16 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findByUuid(postId)
                 .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
 
+
+        if (checkIfPostRequestExists(post.getId())) {
+            throw new AlreadyPostRequestExists(new ErrorMessage(MessageType.POST_REQUEST_EXISTS));
+        }
+
         PostRequest postRequest = PostRequest.builder()
                 .requestType(PostRequest.RequestType.UPDATE)
                 .newTitle(request.getTitle())
                 .newContent(request.getContent())
-                .targetPostUuid(postId)
+                .targetPostId(post.getId())
                 .user(post.getUser())
                 .status(PostRequest.RequestStatus.PENDING)
                 .build();
@@ -87,9 +93,15 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findByUuid(postId)
                 .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
 
+        if (checkIfPostRequestExists(post.getId())) {
+            throw new AlreadyPostRequestExists(new ErrorMessage(MessageType.POST_REQUEST_EXISTS));
+        }
+
         PostRequest postRequest = PostRequest.builder()
                 .requestType(PostRequest.RequestType.DELETE)
-                .targetPostUuid(post.getUuid())
+                .targetPostId(post.getId())
+                .newTitle(post.getTitle())
+                .newContent(post.getContent())
                 .user(post.getUser())
                 .build();
 
@@ -143,8 +155,13 @@ public class PostServiceImpl implements PostService {
                 .toList();
     }
 
+    private boolean checkIfPostRequestExists(Long postId) {
+        return postRequestRepository.existsByTargetPostIdAndStatus(postId, PostRequest.RequestStatus.PENDING);
+    }
+
     private PostDtoResponse convertToPostDtoResponse(Post post) {
         return PostDtoResponse.builder()
+                .uuid(post.getUuid())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .username(post.getUser().getUsername())

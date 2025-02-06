@@ -80,6 +80,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
     }
 
+    @ExceptionHandler(AlreadyPostRequestExists.class)
+    public ResponseEntity<ApiError> handleAlreadyPostRequestExists(AlreadyPostRequestExists ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+    }
+
     public <E> ApiError<E> createApiError(E message,WebRequest request) {
         ApiError apiError = new ApiError();
 

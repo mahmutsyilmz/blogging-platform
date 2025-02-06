@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface PostRequestRepository extends JpaRepository<PostRequest, Long> {
 
     PostRequest findByUuid(UUID uuid);
+
+    boolean existsByTargetPostIdAndStatus(Long targetPostId, PostRequest.RequestStatus status);
 }

@@ -1,18 +1,15 @@
 package com.turkcell.blog.service.impl;
 
-import com.turkcell.blog.dto.request.PostDtoRequest;
+import com.turkcell.blog.dto.response.PostRequestDtoResponse;
 import com.turkcell.blog.entity.Post;
 import com.turkcell.blog.entity.PostRequest;
-import com.turkcell.blog.entity.User;
 import com.turkcell.blog.exception.PostNotFoundException;
 import com.turkcell.blog.exception.RequestNotFoundException;
 import com.turkcell.blog.exception.RequestNotPendingException;
-import com.turkcell.blog.exception.UsernameNotFoundException;
 import com.turkcell.blog.exception.handler.ErrorMessage;
 import com.turkcell.blog.exception.handler.MessageType;
 import com.turkcell.blog.repository.PostRepository;
 import com.turkcell.blog.repository.PostRequestRepository;
-import com.turkcell.blog.repository.UserRepository;
 import com.turkcell.blog.service.PostRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +26,7 @@ public class PostRequestServiceImpl implements PostRequestService {
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    public PostRequest approveRequest(UUID requestUuid) {
+    public PostRequestDtoResponse approveRequest(UUID requestUuid) {
         PostRequest postRequest = postRequestRepository.findByUuid(requestUuid);
         if (postRequest == null) {
             throw new RequestNotFoundException(new ErrorMessage(MessageType.REQUEST_NOT_FOUND));
@@ -50,7 +47,7 @@ public class PostRequestServiceImpl implements PostRequestService {
                 break;
 
             case UPDATE:
-                Post existingPost = postRepository.findByUuid(postRequest.getTargetPostUuid())
+                Post existingPost = postRepository.findById(postRequest.getTargetPostId())
                                 .orElseThrow(()-> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
 
                 existingPost.setTitle(postRequest.getNewTitle());
@@ -59,8 +56,10 @@ public class PostRequestServiceImpl implements PostRequestService {
                 break;
 
             case DELETE:
-                Post postToDelete = postRepository.findByUuid(postRequest.getTargetPostUuid())
+                Post postToDelete = postRepository.findById(postRequest.getTargetPostId())
                         .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
+                postRequest.setNewTitle(postToDelete.getTitle());
+                postRequest.setNewContent(postToDelete.getContent());
                 postRepository.delete(postToDelete);
                 break;
         }
@@ -68,11 +67,11 @@ public class PostRequestServiceImpl implements PostRequestService {
         postRequest.setStatus(PostRequest.RequestStatus.APPROVED);
         postRequestRepository.save(postRequest);
 
-        return postRequest;
+        return convertToPostRequestResponseDto(postRequest);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public PostRequest rejectRequest(UUID requestUuid) {
+    public PostRequestDtoResponse rejectRequest(UUID requestUuid) {
         PostRequest postRequest = postRequestRepository.findByUuid(requestUuid);
         if (postRequest == null) {
             throw new RequestNotFoundException(new ErrorMessage(MessageType.REQUEST_NOT_FOUND));
@@ -84,13 +83,30 @@ public class PostRequestServiceImpl implements PostRequestService {
 
         postRequest.setStatus(PostRequest.RequestStatus.REJECTED);
         postRequestRepository.save(postRequest);
-        return postRequest;
+
+        return convertToPostRequestResponseDto(postRequest);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<PostRequest> getAllPendingRequests() {
-        return postRequestRepository.findAll().stream()
+    public List<PostRequestDtoResponse> getAllPendingRequests() {
+        List<PostRequest> postRequestList = postRequestRepository.findAll().stream()
                 .filter(req -> req.getStatus() == PostRequest.RequestStatus.PENDING)
                 .toList();
+
+        return postRequestList.stream().map(this::convertToPostRequestResponseDto).toList();
+    }
+
+    private PostRequestDtoResponse convertToPostRequestResponseDto(PostRequest postRequest) {
+        return PostRequestDtoResponse.builder()
+                .id(postRequest.getId())
+                .uuid(postRequest.getUuid())
+                .requestType(postRequest.getRequestType().toString())
+                .title(postRequest.getNewTitle())
+                .content(postRequest.getNewContent())
+                .targetPostId(postRequest.getTargetPostId())
+                .username(postRequest.getUser().getUsername())
+                .requestStatus(postRequest.getStatus().toString())
+                .createdDate(postRequest.getCreatedAt().toString())
+                .build();
     }
 }

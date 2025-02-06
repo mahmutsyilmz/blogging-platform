@@ -33,7 +33,7 @@ public class PostRequest {
     private String newContent;
 
     // create için boş olabilir.
-    private UUID targetPostUuid;
+    private Long targetPostId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

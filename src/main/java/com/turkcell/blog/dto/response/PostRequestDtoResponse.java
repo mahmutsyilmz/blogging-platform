@@ -8,17 +8,19 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class PostDtoResponse {
+public class PostRequestDtoResponse {
 
+    private Long id;
     private UUID uuid;
     private String title;
     private String content;
     private String username;
+    private Long targetPostId;
     private String createdDate;
-    private String updatedDate;
-    private Integer likeCount;
+    private String requestStatus;
+    private String requestType;
 
 }

@@ -1,17 +1,9 @@
 package com.turkcell.blog.controller;
 
-import com.turkcell.blog.dto.request.LoginDtoRequest;
-import com.turkcell.blog.dto.request.PostDtoRequest;
-import com.turkcell.blog.dto.request.RegisterDtoRequest;
-import com.turkcell.blog.dto.response.ApiResponse;
-import com.turkcell.blog.dto.response.AuthenticationDtoResponse;
-import com.turkcell.blog.dto.response.PostDtoResponse;
-import com.turkcell.blog.dto.response.UserDtoResponse;
-import com.turkcell.blog.entity.PostRequest;
+import com.turkcell.blog.dto.response.*;
 import com.turkcell.blog.service.PostRequestService;
 import com.turkcell.blog.service.impl.PostServiceImpl;
 import com.turkcell.blog.service.impl.UserServiceImpl;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -51,10 +43,10 @@ public class AdminController {
 
     @GetMapping("/pending")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<List<PostRequest>>> getPendingRequests() {
-        List<PostRequest> pendingRequests = postRequestService.getAllPendingRequests();
+    public ResponseEntity<ApiResponse<List<PostRequestDtoResponse>>> getPendingRequests() {
+        List<PostRequestDtoResponse> pendingRequests = postRequestService.getAllPendingRequests();
 
-        ApiResponse<List<PostRequest>> apiResponse = ApiResponse.<List<PostRequest>>builder()
+        ApiResponse<List<PostRequestDtoResponse>> apiResponse = ApiResponse.<List<PostRequestDtoResponse>>builder()
                 .data(pendingRequests)
                 .createdDate(LocalDateTime.now())
                 .message("Pending requests are fetched.")
@@ -66,14 +58,14 @@ public class AdminController {
 
     @PostMapping("/approve/{requestUuid}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<PostRequest>> approveRequest(@PathVariable UUID requestUuid) {
-        PostRequest request = postRequestService.approveRequest(requestUuid);
+    public ResponseEntity<ApiResponse<PostRequestDtoResponse>> approveRequest(@PathVariable UUID requestUuid) {
+        PostRequestDtoResponse responseDto = postRequestService.approveRequest(requestUuid);
 
-        ApiResponse<PostRequest> apiResponse = ApiResponse.<PostRequest>builder()
-                .data(request)
+        ApiResponse<PostRequestDtoResponse> apiResponse = ApiResponse.<PostRequestDtoResponse>builder()
+                .data(responseDto)
                 .path("/admin/approve/" + requestUuid)
                 .createdDate(LocalDateTime.now())
-                .message(request.getRequestType() + " request approved.")
+                .message(responseDto.getRequestType() + " request approved.")
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -81,14 +73,14 @@ public class AdminController {
 
     @PostMapping("/reject/{requestUuid}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<PostRequest>> rejectRequest(@PathVariable UUID requestUuid) {
-        PostRequest request = postRequestService.rejectRequest(requestUuid);
+    public ResponseEntity<ApiResponse<PostRequestDtoResponse>> rejectRequest(@PathVariable UUID requestUuid) {
+        PostRequestDtoResponse responseDto = postRequestService.rejectRequest(requestUuid);
 
-        ApiResponse<PostRequest> apiResponse = ApiResponse.<PostRequest>builder()
-                .data(request)
+        ApiResponse<PostRequestDtoResponse> apiResponse = ApiResponse.<PostRequestDtoResponse>builder()
+                .data(responseDto)
                 .path("/admin/approve/" + requestUuid)
                 .createdDate(LocalDateTime.now())
-                .message(request.getRequestType() + " request rejected.")
+                .message(responseDto.getRequestType() + " request rejected.")
                 .build();
 
 
