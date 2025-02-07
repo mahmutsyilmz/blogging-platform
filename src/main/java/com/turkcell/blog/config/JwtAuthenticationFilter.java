@@ -1,5 +1,6 @@
 package com.turkcell.blog.config;
 
+import com.turkcell.blog.security.CustomUserDetailsService; // CustomUserDetailsService'i import edin
 import com.turkcell.blog.security.JwtServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +23,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtServiceImpl jwtServiceImpl;
-    private final ApplicationConfig applicationConfig;
+    private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -45,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Kullanıcı adı varsa ve SecurityContext boşsa doğrulamaya çalış.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = applicationConfig.userDetailsService().loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Doğrudan enjekte edilmiş userDetailsService'i kullanın.
             if (jwtServiceImpl.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

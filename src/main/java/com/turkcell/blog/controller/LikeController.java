@@ -34,12 +34,12 @@ public class LikeController {
                 .createdDate(LocalDateTime.now())
                 .data(response)
                 .message("Post successfully liked")
-                .path("/api/user/like/create")
+                .path("like/create")
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity<ApiResponse<LikeDtoResponse>> unlikePost(
             @RequestBody LikeDtoRequest request,
             Authentication authentication) {
@@ -52,7 +52,7 @@ public class LikeController {
                 .createdDate(LocalDateTime.now())
                 .data(response)
                 .message("Post successfully unliked")
-                .path("/api/user/like/delete")
+                .path("like/delete")
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
@@ -66,13 +66,13 @@ public class LikeController {
         ApiResponse<Integer> apiResponse = ApiResponse.<Integer>builder()
                 .createdDate(LocalDateTime.now())
                 .data(response)
-                .message("Post beğeni sayısı getirildi")
-                .path("/api/user/like/count/" + postUuid)
+                .message("Like count is fetched.")
+                .path("like/count/" + postUuid)
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
 
-    @GetMapping("/likedUsers/{postId}")
+    @GetMapping("/likedUsers/{postUuid}")
     public ResponseEntity<ApiResponse<List<String>>> getLikedUsernamesByPostId(
             @PathVariable UUID postUuid
     ) {
@@ -81,8 +81,8 @@ public class LikeController {
         ApiResponse<List<String>> apiResponse = ApiResponse.<List<String>>builder()
                 .createdDate(LocalDateTime.now())
                 .data(response)
-                .message("Post beğenen kullanıcılar getirildi")
-                .path("/api/user/like/likedUsers/" + postUuid)
+                .message("Users who liked the post are fetched.")
+                .path("like/likedUsers/" + postUuid)
                 .build();
         return ResponseEntity.ok(apiResponse);
     }

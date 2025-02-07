@@ -35,7 +35,7 @@ public class LikeServiceImpl implements LikeService {
         User user = userRepository.findByUuid(userUuid)
                 .orElseThrow(() -> new UsernameNotFoundException(new ErrorMessage(MessageType.USER_NOT_FOUND)));
 
-        Post post = postRepository.findByUuid(request.getPostId()) // findByUuid kullanılmalı
+        Post post = postRepository.findByUuid(request.getPostUuid()) // findByUuid kullanılmalı
                 .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
 
         if (isLiked(user, post)) {
@@ -60,7 +60,7 @@ public class LikeServiceImpl implements LikeService {
         User user = userRepository.findByUuid(userUuid)
                 .orElseThrow(() -> new UsernameNotFoundException(new ErrorMessage(MessageType.USER_NOT_FOUND)));
 
-        Post post = postRepository.findByUuid(request.getPostId())
+        Post post = postRepository.findByUuid(request.getPostUuid())
                 .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
 
         Like like = likeRepository.findByUserAndPost(user, post)
@@ -93,7 +93,10 @@ public class LikeServiceImpl implements LikeService {
     private LikeDtoResponse convertToLikeDtoResponse(Like like) {
         return LikeDtoResponse.builder()
                 .userUuid(like.getUser().getUuid())
-                .firstName(like.getUser().getFirstName())
+                .postUuid(like.getPost().getUuid())
+                .email(like.getUser().getEmail())
+                .username(like.getUser().getUsername())
+                .createdDate(like.getCreatedAt().toString())
                 .build();
     }
 

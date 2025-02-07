@@ -4,6 +4,7 @@ package com.turkcell.blog.service.impl;
 import com.turkcell.blog.dto.request.LoginDtoRequest;
 import com.turkcell.blog.dto.request.RegisterDtoRequest;
 import com.turkcell.blog.dto.response.AuthenticationDtoResponse;
+import com.turkcell.blog.dto.response.DashboardDto;
 import com.turkcell.blog.dto.response.UserDtoResponse;
 import com.turkcell.blog.entity.User;
 import com.turkcell.blog.exception.InvalidPasswordException;
@@ -11,6 +12,8 @@ import com.turkcell.blog.exception.UsernameAlreadyExistsException;
 import com.turkcell.blog.exception.UsernameNotFoundException;
 import com.turkcell.blog.exception.handler.ErrorMessage;
 import com.turkcell.blog.exception.handler.MessageType;
+import com.turkcell.blog.repository.LikeRepository;
+import com.turkcell.blog.repository.PostRepository;
 import com.turkcell.blog.repository.RoleRepository;
 import com.turkcell.blog.repository.UserRepository;
 import com.turkcell.blog.security.JwtServiceImpl;
@@ -30,10 +33,12 @@ import java.util.UUID;
 public class UserServiceImpl {
 
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtServiceImpl jwtServiceImpl;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
+    private final LikeRepository likeRepository;
 
     public AuthenticationDtoResponse register(RegisterDtoRequest request) {
 
@@ -134,26 +139,6 @@ public class UserServiceImpl {
                 .toList();
     }
 
-    public UserDtoResponse createUser(RegisterDtoRequest request) {
-
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new UsernameAlreadyExistsException(new ErrorMessage(MessageType.USERNAME_ALREADY_EXISTS));
-        }
-
-        User user = User.builder()
-                .email(request.getEmail())
-                .username(request.getUsername())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(roleRepository.findByName("USER").orElseThrow())
-                .build();
-
-        userRepository.save(user);
-
-        return convertToUserDtoResponse(user);
-    }
-
     public User getCurrentUser(Authentication authentication) {
         String username = authentication.getName();
         return userRepository.findByUsername(username)
@@ -167,6 +152,28 @@ public class UserServiceImpl {
         return convertToUserDtoResponse(user);
     }
 
+    public DashboardDto getDashboard(){
+        return DashboardDto.builder()
+                .userCount(userRepository.count())
+                .postCount(postRepository.count())
+                .likeCount(likeRepository.count())
+                .build();
+    }
+
+    public UserDtoResponse getUserProfile(UUID userUuid){
+        User user = userRepository.findByUuid(userUuid)
+                .orElseThrow(() -> new UsernameNotFoundException(new ErrorMessage(MessageType.USER_NOT_FOUND)));
+        return convertToUserDtoResponse(user);
+    }
+
+    private Integer getPostCountByUser(User user) {
+        return postRepository.countByUser(user);
+    }
+
+    private Integer getLikeCountByUser(User user) {
+        return likeRepository.countByUser(user);
+    }
+
     private UserDtoResponse convertToUserDtoResponse(User user) {
         return UserDtoResponse.builder()
                 .uuid(user.getUuid())
@@ -176,6 +183,9 @@ public class UserServiceImpl {
                 .createdDate(user.getCreatedAt().toString())
                 .lastName(user.getLastName())
                 .role(user.getRole().getName())
+                .bio(user.getBio())
+                .postCount(getPostCountByUser(user))
+                .likeCount(getLikeCountByUser(user))
                 .build();
     }
 }

@@ -1,17 +1,16 @@
-package com.turkcell.blog.dto.request;
+package com.turkcell.blog.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LikeDtoRequest {
-
-    private UUID postUuid;
+public class DashboardDto {
+    private Long userCount;
+    private Long postCount;
+    private Long likeCount;
 }

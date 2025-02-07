@@ -13,8 +13,16 @@ import java.util.UUID;
 @Builder
 public class LikeDtoResponse {
 
+    private UUID uuid;
     private UUID userUuid;
-    private String firstName;
+    private String username;
     private String email;
+    private String createdDate;
+    private UUID postUuid;
+
+
+
+
+
 
 }

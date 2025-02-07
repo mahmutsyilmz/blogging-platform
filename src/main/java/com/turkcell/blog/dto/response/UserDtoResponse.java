@@ -20,5 +20,8 @@ public class UserDtoResponse {
     private String username;
     private String role;
     private String createdDate;
+    private String bio;
+    private Integer postCount;
+    private Integer likeCount;
 
 }

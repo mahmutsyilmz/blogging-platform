@@ -87,6 +87,34 @@ public class AdminController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<ApiResponse<List<UserDtoResponse>>> getAllUsers() {
+        List<UserDtoResponse> response = userServiceImpl.getAllUsers();
+
+        ApiResponse<List<UserDtoResponse>> apiResponse = ApiResponse.<List<UserDtoResponse>>builder()
+                .createdDate(LocalDateTime.now())
+                .path("/admin/users")
+                .data(response)
+                .message("Users fetched successfully")
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<ApiResponse<DashboardDto>> getDashboard() {
+        DashboardDto dashboard = userServiceImpl.getDashboard();
+
+        ApiResponse<DashboardDto> apiResponse = ApiResponse.<DashboardDto>builder()
+                .createdDate(LocalDateTime.now())
+                .data(dashboard)
+                .message("Dashboard fetched successfully")
+                .path("/admin/dashboard")
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
 
 
 

@@ -2,7 +2,10 @@ package com.turkcell.blog.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -12,6 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Like {
 
     @Id
@@ -19,6 +23,7 @@ public class Like {
     private Long id;
 
     @Column(columnDefinition = "uuid", updatable = false, nullable = false, unique = true)
+    @Builder.Default
     private UUID uuid = UUID.randomUUID();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,5 +33,10 @@ public class Like {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false, updatable = false)
+    private Date createdAt;
 
 }
