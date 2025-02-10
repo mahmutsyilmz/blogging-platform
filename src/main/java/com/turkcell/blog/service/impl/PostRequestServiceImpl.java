@@ -10,6 +10,7 @@ import com.turkcell.blog.exception.handler.ErrorMessage;
 import com.turkcell.blog.exception.handler.MessageType;
 import com.turkcell.blog.repository.PostRepository;
 import com.turkcell.blog.repository.PostRequestRepository;
+import com.turkcell.blog.service.EmailService;
 import com.turkcell.blog.service.PostRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,7 @@ public class PostRequestServiceImpl implements PostRequestService {
 
     private final PostRequestRepository postRequestRepository;
     private final PostRepository postRepository;
+    private final EmailService emailService;
 
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -104,6 +106,7 @@ public class PostRequestServiceImpl implements PostRequestService {
                 .title(postRequest.getNewTitle())
                 .content(postRequest.getNewContent())
                 .targetPostId(postRequest.getTargetPostId())
+                .email(postRequest.getUser().getEmail())
                 .username(postRequest.getUser().getUsername())
                 .requestStatus(postRequest.getStatus().toString())
                 .createdDate(postRequest.getCreatedAt().toString())

@@ -18,6 +18,7 @@ public class PostRequestDtoResponse {
     private String title;
     private String content;
     private String username;
+    private String email;
     private Long targetPostId;
     private String createdDate;
     private String requestStatus;

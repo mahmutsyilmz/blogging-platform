@@ -49,6 +49,10 @@ public class User implements UserDetails {
     @Column(length = 500)
     private String bio;
 
+    private String verificationCode;
+
+    private boolean emailVerified = false;
+
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, updatable = false)

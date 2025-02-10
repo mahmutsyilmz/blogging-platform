@@ -15,6 +15,7 @@ public enum MessageType {
     REQUEST_NOT_PENDING("0009","Request is not pending."),
     EMAIL_ALREADY_EXISTS("0010","Email already exists."),
     POST_REQUEST_EXISTS("0011","There is already a request for this post."),
+    INVALID_VERIFICATION_CODE("0012","Invalid verification code."),
     GENERAL_EXCEPTION("9999","An error occurred.");
 
     private String code;

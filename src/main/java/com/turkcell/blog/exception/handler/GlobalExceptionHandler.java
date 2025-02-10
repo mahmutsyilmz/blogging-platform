@@ -70,6 +70,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
     }
 
+    @ExceptionHandler(InvalidVerificationCodeException.class)
+    public ResponseEntity<ApiError> handleInvalidVerificationCodeException(InvalidVerificationCodeException ex, WebRequest request) {
+        return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
+    }
+
     @ExceptionHandler(RequestNotFoundException.class)
     public ResponseEntity<ApiError> handleRequestNotFoundException(RequestNotFoundException ex, WebRequest request) {
         return ResponseEntity.badRequest().body(createApiError(ex.getMessage(),request));
