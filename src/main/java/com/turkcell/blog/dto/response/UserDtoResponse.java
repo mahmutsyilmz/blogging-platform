@@ -21,6 +21,7 @@ public class UserDtoResponse {
     private String role;
     private String createdDate;
     private String bio;
+    private boolean emailVerified;
     private Integer postCount;
     private Integer likeCount;
 

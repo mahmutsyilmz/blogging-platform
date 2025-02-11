@@ -1,12 +1,15 @@
 package com.turkcell.blog.controller;
 
 import com.turkcell.blog.dto.response.*;
+import com.turkcell.blog.entity.User;
+import com.turkcell.blog.service.EmailService;
 import com.turkcell.blog.service.PostRequestService;
 import com.turkcell.blog.service.impl.PostServiceImpl;
 import com.turkcell.blog.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +25,7 @@ public class AdminController {
     private final UserServiceImpl userServiceImpl;
     private final PostServiceImpl postServiceImpl;
     private final PostRequestService postRequestService;
+    private final EmailService emailService;
 
 
 
@@ -61,6 +65,11 @@ public class AdminController {
     public ResponseEntity<ApiResponse<PostRequestDtoResponse>> approveRequest(@PathVariable UUID requestUuid) {
         PostRequestDtoResponse responseDto = postRequestService.approveRequest(requestUuid);
 
+        User user = userServiceImpl.getUserByUsername(responseDto.getUsername());
+
+        userServiceImpl.sendRequestNotification(user, responseDto.getRequestType(), true);
+
+        System.out.println("Email sent to " + responseDto.getEmail());
         ApiResponse<PostRequestDtoResponse> apiResponse = ApiResponse.<PostRequestDtoResponse>builder()
                 .data(responseDto)
                 .path("/admin/approve/" + requestUuid)
@@ -75,6 +84,11 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<PostRequestDtoResponse>> rejectRequest(@PathVariable UUID requestUuid) {
         PostRequestDtoResponse responseDto = postRequestService.rejectRequest(requestUuid);
+
+        User user = userServiceImpl.getUserByUsername(responseDto.getUsername());
+
+        userServiceImpl.sendRequestNotification(user, responseDto.getRequestType(), false);
+
 
         ApiResponse<PostRequestDtoResponse> apiResponse = ApiResponse.<PostRequestDtoResponse>builder()
                 .data(responseDto)
