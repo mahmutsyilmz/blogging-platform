@@ -32,10 +32,6 @@ public class PostSecurityServiceImpl {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
-        System.out.println("DEBUG :: currentUsername = " + currentUsername
-                + ", postOwner = " + postOwner
-                + ", isAdmin = " + isAdmin);
-
         //eğer post sahibi veya adminse true döner
         return (currentUsername.equals(postOwner) || isAdmin);
     }
