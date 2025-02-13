@@ -241,12 +241,13 @@ public class UserServiceImpl {
     }
 
     private UserDtoResponse convertToUserDtoResponse(User user) {
+        String createdDateStr = (user.getCreatedAt() != null) ? user.getCreatedAt().toString() : "N/A";
         return UserDtoResponse.builder()
                 .uuid(user.getUuid())
                 .username(user.getUsername())
                 .firstName(user.getFirstName())
                 .email(user.getEmail())
-                .createdDate(user.getCreatedAt().toString())
+                .createdDate(createdDateStr)
                 .lastName(user.getLastName())
                 .role(user.getRole().getName())
                 .bio(user.getBio())

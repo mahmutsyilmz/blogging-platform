@@ -99,6 +99,7 @@ public class PostRequestServiceImpl implements PostRequestService {
     }
 
     private PostRequestDtoResponse convertToPostRequestResponseDto(PostRequest postRequest) {
+
         return PostRequestDtoResponse.builder()
                 .id(postRequest.getId())
                 .uuid(postRequest.getUuid())

@@ -91,12 +91,14 @@ public class LikeServiceImpl implements LikeService {
     }
 
     private LikeDtoResponse convertToLikeDtoResponse(Like like) {
+        String createdDateStr = (like.getCreatedAt() != null) ? like.getCreatedAt().toString() : "";
+
         return LikeDtoResponse.builder()
                 .userUuid(like.getUser().getUuid())
                 .postUuid(like.getPost().getUuid())
                 .email(like.getUser().getEmail())
                 .username(like.getUser().getUsername())
-                .createdDate(like.getCreatedAt().toString())
+                .createdDate(createdDateStr)
                 .build();
     }
 
