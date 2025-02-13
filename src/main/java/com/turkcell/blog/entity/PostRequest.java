@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -27,6 +28,7 @@ public class PostRequest {
     private UUID uuid = UUID.randomUUID();
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RequestType requestType;
 
     private String newTitle;
@@ -46,7 +48,7 @@ public class PostRequest {
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, updatable = false)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
 
     public enum RequestType {
