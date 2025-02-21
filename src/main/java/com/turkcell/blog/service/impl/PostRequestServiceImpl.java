@@ -12,6 +12,7 @@ import com.turkcell.blog.repository.PostRepository;
 import com.turkcell.blog.repository.PostRequestRepository;
 import com.turkcell.blog.service.EmailService;
 import com.turkcell.blog.service.PostRequestService;
+import com.turkcell.blog.service.UserActionLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class PostRequestServiceImpl implements PostRequestService {
     private final PostRequestRepository postRequestRepository;
     private final PostRepository postRepository;
     private final EmailService emailService;
+    private final UserActionLogService userActionLogService;
 
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -46,6 +48,7 @@ public class PostRequestServiceImpl implements PostRequestService {
                         .user(postRequest.getUser())
                         .build();
                 postRepository.save(newPost);
+                userActionLogService.logAction(postRequest.getUser().getUsername(), "Post created");
                 break;
 
             case UPDATE:
@@ -55,6 +58,7 @@ public class PostRequestServiceImpl implements PostRequestService {
                 existingPost.setTitle(postRequest.getNewTitle());
                 existingPost.setContent(postRequest.getNewContent());
                 postRepository.save(existingPost);
+                userActionLogService.logAction(postRequest.getUser().getUsername(), "Post updated");
                 break;
 
             case DELETE:
@@ -63,6 +67,7 @@ public class PostRequestServiceImpl implements PostRequestService {
                 postRequest.setNewTitle(postToDelete.getTitle());
                 postRequest.setNewContent(postToDelete.getContent());
                 postRepository.delete(postToDelete);
+                userActionLogService.logAction(postRequest.getUser().getUsername(), "Post deleted");
                 break;
         }
 
@@ -85,7 +90,7 @@ public class PostRequestServiceImpl implements PostRequestService {
 
         postRequest.setStatus(PostRequest.RequestStatus.REJECTED);
         postRequestRepository.save(postRequest);
-
+        userActionLogService.logAction(postRequest.getUser().getUsername(), "Post request rejected");
         return convertToPostRequestResponseDto(postRequest);
     }
 

@@ -15,6 +15,7 @@ import com.turkcell.blog.repository.LikeRepository;
 import com.turkcell.blog.repository.PostRepository;
 import com.turkcell.blog.repository.UserRepository;
 import com.turkcell.blog.service.LikeService;
+import com.turkcell.blog.service.UserActionLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class LikeServiceImpl implements LikeService {
     private final LikeRepository likeRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final UserActionLogService userActionLogService;
 
 
     @Override
@@ -48,7 +50,7 @@ public class LikeServiceImpl implements LikeService {
                 .build();
 
         likeRepository.save(newLike);
-
+        userActionLogService.logAction(user.getUsername(), "Post liked");
         return convertToLikeDtoResponse(newLike);
 
     }
@@ -69,7 +71,7 @@ public class LikeServiceImpl implements LikeService {
 
 
         likeRepository.delete(like);
-
+        userActionLogService.logAction(user.getUsername(), "Post unliked");
         return convertToLikeDtoResponse(like);
     }
 
