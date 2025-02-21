@@ -20,6 +20,7 @@ import com.turkcell.blog.repository.RoleRepository;
 import com.turkcell.blog.repository.UserRepository;
 import com.turkcell.blog.security.JwtServiceImpl;
 import com.turkcell.blog.service.EmailService;
+import com.turkcell.blog.service.UserActionLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -44,6 +45,7 @@ public class UserServiceImpl {
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepository;
     private final LikeRepository likeRepository;
+    private final UserActionLogService userActionLogService;
 
     public AuthenticationDtoResponse register(RegisterDtoRequest request) {
 
@@ -67,6 +69,7 @@ public class UserServiceImpl {
                 .build();
 
         userRepository.save(user);
+        userActionLogService.logAction(user.getUsername(), "User registered");
 
 
         // Kullanıcı kaydolunca JWT token üretip dönebiliriz.
@@ -131,6 +134,7 @@ public class UserServiceImpl {
                         .build(),
                 user.getUuid().toString()
         );
+        userActionLogService.logAction(user.getUsername(), "User logged in");
         return AuthenticationDtoResponse.builder()
                 .token(jwtToken)
                 .message(user.getRole().getName() + " " + user.getUsername() + " successfully authenticated.")
@@ -142,6 +146,7 @@ public class UserServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException(new ErrorMessage(MessageType.USER_NOT_FOUND)));
         user.setVerificationCode(code);
         userRepository.save(user);
+        userActionLogService.logAction(user.getUsername(), "Verification code saved");
     }
 
     public boolean verifyUserEmail(UUID userUuid, String code) {
@@ -151,6 +156,7 @@ public class UserServiceImpl {
             user.setEmailVerified(true);
             user.setVerificationCode(null);
             userRepository.save(user);
+            userActionLogService.logAction(user.getUsername(), "User email verified");
             return true;
         }else throw new InvalidVerificationCodeException(new ErrorMessage(MessageType.INVALID_VERIFICATION_CODE));
     }
@@ -170,6 +176,7 @@ public class UserServiceImpl {
                         " has been rejected.\n\nThank you.";
             }
             emailService.sendRequestNotification(user.getEmail(), subject, message);
+            userActionLogService.logAction(user.getUsername(), "Request notification sent");
         }
     }
 
@@ -218,12 +225,14 @@ public class UserServiceImpl {
         user.setLastName(request.getLastName());
         user.setBio(request.getBio());
         userRepository.save(user);
+        userActionLogService.logAction(user.getUsername(), "User updated");
         return convertToUserDtoResponse(user);
     }
 
     public UserDtoResponse getUserProfile(UUID userUuid){
         User user = userRepository.findByUuid(userUuid)
                 .orElseThrow(() -> new UsernameNotFoundException(new ErrorMessage(MessageType.USER_NOT_FOUND)));
+        userActionLogService.logAction(user.getUsername(), "User profile fetched");
         return convertToUserDtoResponse(user);
     }
 

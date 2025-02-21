@@ -14,6 +14,7 @@ import com.turkcell.blog.repository.PostRepository;
 import com.turkcell.blog.repository.PostRequestRepository;
 import com.turkcell.blog.repository.UserRepository;
 import com.turkcell.blog.service.PostService;
+import com.turkcell.blog.service.UserActionLogService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostRequestRepository postRequestRepository;
+    private final UserActionLogService userActionLogService;
 
     @Override
     public PostDtoResponse createPost(PostDtoRequest request, User user) {
@@ -43,6 +45,7 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         PostRequest savedRequest = postRequestRepository.save(postRequest);
+        userActionLogService.logAction(user.getUsername(), "Post create request");
 
         return PostDtoResponse.builder()
                 .title(savedRequest.getNewTitle())
@@ -76,6 +79,7 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         PostRequest savedRequest = postRequestRepository.save(postRequest);
+        userActionLogService.logAction(post.getUser().getUsername(), "Post update request");
 
         return PostDtoResponse.builder()
                 .title(savedRequest.getNewTitle())
@@ -106,6 +110,7 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         postRequestRepository.save(postRequest);
+        userActionLogService.logAction(post.getUser().getUsername(), "Post delete request");
     }
 
     @Override
@@ -114,6 +119,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findByUuid(postId)
                 .orElseThrow(() -> new PostNotFoundException(new ErrorMessage(MessageType.POST_NOT_FOUND)));
 
+        userActionLogService.logAction(post.getUser().getUsername(), "Post get request");
         return convertToPostDtoResponse(post);
     }
 

@@ -13,6 +13,8 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
+
+
     @Override
     public void sendVerificationEmail(String toEmail, String verificationCode) {
         SimpleMailMessage message = new SimpleMailMessage();

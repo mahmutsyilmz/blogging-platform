@@ -31,7 +31,9 @@ public class PostRequest {
     @Column(nullable = false)
     private RequestType requestType;
 
+
     private String newTitle;
+    @Column(columnDefinition = "TEXT")
     private String newContent;
 
     // create için boş olabilir.

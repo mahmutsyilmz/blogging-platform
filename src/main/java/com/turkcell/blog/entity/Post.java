@@ -31,7 +31,7 @@ public class Post {
     private UUID uuid = UUID.randomUUID();
 
     private String title;
-
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne
