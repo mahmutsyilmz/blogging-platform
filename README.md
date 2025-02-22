@@ -1,6 +1,8 @@
-# Blogging Platform Backend
+# Blogging Platform
 
-**Blogging Platform Backend** is a RESTful API designed to power a comprehensive blogging system. This application provides robust user management, post creation and moderation, email verification, AI-powered content summarization, and more. It leverages modern Java technologies, follows security best practices, and is built for scalability and maintainability.
+**Blogging Platform** is a RESTful API designed to power a comprehensive blogging system. This application provides robust user management, post creation and moderation, email verification, AI-powered content summarization, and more. It leverages modern Java technologies, follows security best practices, and is built for scalability and maintainability.
+
+The accompanying frontend (Blogging Platform UI) is built with Angular. It offers a modern, responsive design where users can create posts, like content, view detailed post pages, and perform other interactions with the backend. (See the Screenshots section for UI images.)
 
 ## Table of Contents
 
