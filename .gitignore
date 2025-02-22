@@ -35,3 +35,6 @@ build/
 # Ignore environment variable files
 .env
 
+.DS_STORE
+
+
