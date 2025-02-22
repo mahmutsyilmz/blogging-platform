@@ -23,8 +23,7 @@
   - [Admin Endpoints](#admin-endpoints)
   - [AI Endpoints](#ai-endpoints)
 - [Testing](#testing)
-- [Deployment](#deployment)
-  - [Build Process](#build-process)
+
 ## Overview
 
 The Blogging Platform Backend is a Spring Boot application that serves as the core of a dynamic blogging system. It handles user registration, authentication with JWT, post management (creation, update, deletion), admin moderation of post requests, and integrates with external AI services for content summarization. Additionally, it includes a comprehensive email verification process and extensive logging for auditing and debugging purposes.
