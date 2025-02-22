@@ -23,6 +23,10 @@
   - [Admin Endpoints](#admin-endpoints)
   - [AI Endpoints](#ai-endpoints)
 - [Testing](#testing)
+- [Frontend Overview](#frontend-overview)
+- [Screenshots](#screenshots)
+
+
 
 ## Overview
 
