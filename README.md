@@ -189,4 +189,49 @@ mvn test
 ```
 For integration tests, consider using an in-memory database (e.g., H2) to simulate the production environment.
 
+## Frontend Overview  
+
+The frontend of the Blogging Platform is developed using **Angular** and **Angular Material**. It provides a modern, responsive interface for users to:  
+
+- Register, log in, and manage their profiles.  
+- Create, view, search, and interact with posts.  
+- Like posts and view the list of users who liked a post.  
+- Access AI-generated summaries for posts via a dedicated **"Summarize"** button.  
+
+For administrators, a dedicated UI offers:  
+
+- Managing users.  
+- Reviewing pending requests.  
+- Viewing dashboard statistics.  
+
+See the **Screenshots** section for visual references.  
+
+## Screenshots  
+Add screenshots for key views below (replace placeholders with actual image paths):  
+
+- **Login Screen:**  
+![Login Screen](images/login-screen.png)  
+
+- **Add New Post View:**  
+![Add New Post Screen](images/add-new-post.png)  
+
+- **Admin Pending Request Screen:**  
+![Admin Pending Request Screen](images/admin-pending-requests.png)  
+
+- **All Posts Screen:**  
+![All Posts Screen](images/all-posts.png)  
+
+- **Summarize Button:**  
+![Summarize Button](images/all-posts-summarizing.png)
+
+- **Profile View:**  
+![Profile View](images/profile-screen.png)
+
+- **Admin Dashboard View:**  
+![Admin Dashboard View](images/admin-dashboard.png)
+
+- **Admin Log Screen:**  
+![Admin Log Screen](images/admin-log-screen.png)  
+
+
 
