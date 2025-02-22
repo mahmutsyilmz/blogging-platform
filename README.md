@@ -90,7 +90,6 @@ The Blogging Platform Backend is a Spring Boot application that serves as the co
 ## Architecture & Technologies
 
 - **Spring Boot:** Core framework for building the application.
-- **Spring MVC:** For RESTful web service creation.
 - **Spring Security:** For authentication and role-based authorization using JWT.
 - **Spring Data JPA & Hibernate:** For object-relational mapping and database interactions.
 - **PostgreSQL:** Primary relational database.
