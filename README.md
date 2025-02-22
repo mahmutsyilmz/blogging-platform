@@ -211,7 +211,6 @@ For administrators, a dedicated UI offers:
 See the **Screenshots** section for visual references.  
 
 ## Screenshots  
-Add screenshots for key views below (replace placeholders with actual image paths):  
 
 - **Login Screen:**  
 ![Login Screen](images/login-screen.png)  
