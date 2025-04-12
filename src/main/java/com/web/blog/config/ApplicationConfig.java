@@ -18,43 +18,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    @Bean
-    CommandLineRunner init(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        return args -> {
-
-
-
-            if (!roleRepository.findByName("ADMIN").isPresent()) {
-                Role adminRole = new Role();
-                adminRole.setName("ADMIN");
-                roleRepository.save(adminRole);
-            }
-
-            if (!roleRepository.findByName("USER").isPresent()) {
-                Role userRole = new Role();
-                userRole.setName("USER");
-                roleRepository.save(userRole);
-            }
-
-            if (!userRepository.findByUsername("admin").isPresent()) {
-                Role adminRole = roleRepository.findByName("ADMIN")
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-
-                User adminUser = User.builder()
-                        .username("admin")
-                        .email("admin@example.com")
-                        .firstName("Admin")
-                        .lastName("User")
-                        .password(passwordEncoder.encode("Admin123."))
-                        .role(adminRole)
-                        .build();
-
-                userRepository.save(adminUser);
-
-            }
-        };
-
-    }
     /*
       Şifrelerin encode edilmesinde kullanılacak Bean.
      */
