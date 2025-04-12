@@ -29,34 +29,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        // Token doğrulama işlemleri
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String username;
+        // Eğer istek /user/login veya /user/register ise, filtreyi atla.
+        String path = request.getRequestURI();
+        if (path.startsWith("/user/login") || path.startsWith("/user/register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-        // Header yoksa veya "Bearer " ile başlamıyorsa filter'a devam.
+        final String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // "Bearer "ın ardından gelen token'ı alalım.
-        jwt = authHeader.substring(7);
-        username = jwtServiceImpl.extractUsername(jwt); // token içinden username'i çıkardık.
+        String jwt = authHeader.substring(7);
+        String username = jwtServiceImpl.extractUsername(jwt);
 
-        // Kullanıcı adı varsa ve SecurityContext boşsa doğrulamaya çalış.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Doğrudan enjekte edilmiş userDetailsService'i kullanın.
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtServiceImpl.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // Kullanıcıyı security context'e yerleştir
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-        // Filtre zincirine devam
         filterChain.doFilter(request, response);
     }
+
 }
