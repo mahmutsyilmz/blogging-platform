@@ -6,6 +6,7 @@ import com.web.blog.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -40,6 +41,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/user/login",
                                 "/user/register",
                                 "/v3/api-docs/**",
@@ -65,10 +67,13 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 "https://stalwart-pavlova-ff8dce.netlify.app",
-                "https://67fae971406e8f0008cf9e94--stalwart-pavlova-ff8dce.netlify.app"
+                "https://67fae971406e8f0008cf9e94--stalwart-pavlova-ff8dce.netlify.app",
+                "http://localhost:4200"
         ));        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization", "Content-Type", "Cache-Control", "Access-Control-Allow-Headers", "Access-Control-Request-Headers"
+        ));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Access-Control-Allow-Origin"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
